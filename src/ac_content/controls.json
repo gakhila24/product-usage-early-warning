@@ -1,0 +1,34 @@
+[
+ {
+  "title": "As-of date",
+  "text": "every page must use one governed as-of timestamp and expose the data-through date."
+ },
+ {
+  "title": "Filter consistency",
+  "text": "product, region, segment and renewal-horizon filters must be applied to both numerator and denominator."
+ },
+ {
+  "title": "Identity resolution",
+  "text": "CRM account ID is the proposed master key; duplicate or merged accounts require an effective-dated crosswalk."
+ },
+ {
+  "title": "Missing data",
+  "text": "retain an “Unknown / Unscored” bucket; never replace missing values with zero without an approved rule."
+ },
+ {
+  "title": "Currency",
+  "text": "pipeline and retention metrics require a stated reporting currency and Finance-approved FX treatment."
+ },
+ {
+  "title": "Versioning",
+  "text": "retain model version, feature version, threshold version and calculation date with every score snapshot."
+ },
+ {
+  "title": "Quality checks",
+  "text": "validate freshness, row counts, uniqueness, referential integrity, band totals and reconciliation to Finance/CRM control totals."
+ },
+ {
+  "title": "Access & privacy",
+  "text": "apply least-privilege access, approved retention and suppression of sensitive free-text or personal data."
+ }
+]

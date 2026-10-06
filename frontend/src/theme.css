@@ -1,0 +1,100 @@
+/* Harbor: muted teal accents, slate navigation, and soft neutral surfaces.
+   Legacy color-named classes remain aliases so component APIs stay stable. */
+:root {
+  --primary: #167d8d;
+  --primary-dark: #105e6b;
+  --accent-soft: #e5f2f2;
+  --accent-border: #c6dfe1;
+  --accent-hover: #f0f7f7;
+  --muted: #647780;
+  --border: #e0e7e9;
+  --ink: #243b46;
+  --rail: #20343e;
+  color: var(--ink);
+  background: #f4f7f7;
+}
+button:focus-visible, a:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible { outline-color: #48a6b3; }
+::selection { background: #c6e7e9; }
+input, select, textarea { color: var(--ink); accent-color: var(--primary); }
+/* A dark navigation rail anchors the otherwise light interface. */
+.sidebar { background: var(--rail); border-color: #304953; }
+.sidebar .nav-item { color: #b8cbd1; }
+.sidebar .nav-item:hover { background: #2c4651; color: #fff; }
+.sidebar .nav-item.active { background: #335963; color: #c4f0ee; }
+.sidebar .workspace-logo { background: #2b4651; border-color: #42616c; color: #a2d9df; }
+.sidebar-icons .user-profile { border-color: #3a525d; }
+.sidebar .nav-item:focus-visible { outline-color: #8bd5dc; }
+.brand-mark { box-shadow: 0 3px 10px #102e3a30; }
+.workspace-logo { background: var(--accent-soft); border-color: var(--accent-border); color: var(--primary); }
+.top-avatar, .profile-avatar { background: #dcebed; color: #35616c; }
+.avatar { box-shadow: 0 0 0 1px var(--border); }
+.notification-button>span, .eyebrow>span { background: var(--primary); }
+.eyebrow, .text-button { color: var(--primary); }
+.text-button:hover { color: var(--primary-dark); }
+.muted-button { color: var(--muted); }
+.icon-button:hover, .workspace-switch:hover { background: var(--accent-soft); }
+.button:hover { background: var(--accent-hover); border-color: var(--accent-border); }
+.button.primary { box-shadow: 0 2px 4px #167d8d20; }
+.button.selected { background: var(--accent-soft); border-color: var(--accent-border); }
+.purple, .demo-pill { background: var(--accent-soft); color: var(--primary-dark); border-color: var(--accent-border); }
+.neutral { background: #edf1f3; color: #526873; }
+/* Overview and shared data components. */
+.attention-banner, .info-banner, .portfolio-strip, .guide-hero,
+.detail-score, .insight-card {
+  background: linear-gradient(110deg, #e9f3f3, #f5f9f9);
+  border-color: var(--accent-border);
+  color: var(--muted);
+}
+.attention-icon, .empty-icon, .toast>span { background: #d7ebed; color: var(--primary); }
+.attention-banner strong, .info-banner strong, .portfolio-strip strong,
+.guide-hero strong, .detail-score strong { color: var(--primary-dark); }
+.attention-banner button, .insight-card button, .insight-icon { color: var(--primary); }
+.attention-banner p, .insight-card p { color: #526f79; }
+.sparkline { color: var(--primary); }
+.metric-trend { color: var(--primary-dark); }
+.metric-red .metric-trend { color: #ae6570; }
+.metric-amber .metric-trend { color: #997a45; }
+.metric-green .metric-trend { color: #47846c; }
+.metric-label svg, .distribution-note>svg, .recommended-item>svg { color: #78969e; }
+.chart-footnote .live-dot, .legend-dot.healthy { background: var(--primary); }
+.distribution-legend button:hover, .recommended-item:hover,
+tbody tr:hover, .notification-item:hover { background: var(--accent-hover); }
+.tabs button.active, .pagination button.active { background: var(--accent-soft); color: var(--primary-dark); }
+.tabs button:hover, .pagination button:hover:not(:disabled) { background: var(--accent-soft); color: var(--primary-dark); }
+.tabs button.active>span { background: #cce5e7; color: var(--primary-dark); }
+.filter-bar, .search-summary { background: #f5f9f9; color: var(--muted); }
+.filter-bar select, .launch-form>select, .outcome-form>select,
+.outcome-form>textarea { border-color: var(--border); }
+.account-logo.violet, .playbook-icon.violet { background: #e2f0ef; color: #267e80; }
+.account-logo.indigo, .playbook-icon.blue { background: #e7edf2; color: #53738a; }
+.account-logo.pink, .avatar-ls { background: #f0e9df; color: #92734e; }
+.signal-tag>span { background: #799da4; }
+.signal-danger>span { background: #d2a2ac; }
+/* Playbooks, monitoring, settings, and account-detail drawers. */
+.notice, .detail-playbook { background: #f2f8f8; border-color: var(--accent-border); }
+.step-list li>span { background: #f6f9fa; border-color: var(--border); color: var(--primary); }
+.drift-meter, .distribution-row>div, .contribution-track { background: #e8eff0; }
+.distribution-row>div>span, .contribution-track>span { background: linear-gradient(90deg, #73b6bc, #167d8d); }
+.toggle { background: #cbd7db; }
+.toggle.on { background: var(--primary); }
+.monitor-metric>strong, .detail-facts strong, .detail-section h3,
+.detail-playbook h3, .contribution-label, .guide-content h3,
+.notification-item strong { color: var(--ink); }
+.risk-gauge, .policy-note, .notification-item>svg { color: var(--primary); }
+.notification-icon.blue { background: #e2eff2; color: #417e90; }
+.modal, .toast, .notification-popover { border-color: var(--border); box-shadow: 0 15px 60px #16333f1c; }
+.drawer { box-shadow: -10px 0 60px #16333f1c; }
+.modal-backdrop, .sidebar-scrim { background: #142a3859; }
+.notification-item { border-color: var(--border); }
+.metric-card>p, .chart-footnote, .page-footer, .account-cell small,
+.owner-cell, .table-footer, .recommended-item small, .info-banner,
+.notice, .modal-content>p, .playbook-card>p, .policy-note p,
+.timeline-body p, .setting-row p, .score-distribution-view>p,
+.monitor-note, .release-gate, .detail-section p, .signal-contributions small,
+.detail-account p, .detail-facts small, .detail-disclaimer, .detail-playbook>p,
+.guide-content>p, .risk-guide, .step-list li, .form-label, .outcome-form>small,
+.contribution-label span, .detail-score>div>span, .card-eyebrow, .trigger,
+.timeline-body small, .settings-info, .policy-note h3, .notification-item small,
+.toast, .distribution-row, .detail-score strong small,
+.monitor-metric>strong small { color: var(--muted); }

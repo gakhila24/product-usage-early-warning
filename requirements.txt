@@ -1,0 +1,9 @@
+# Backend (Python 3.10+)
+flask>=3.0
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.4
+networkx>=3.2
+
+# Optional: generated chat answers (GraphRAG). Without it the chat widget still answers from retrieved context.
+# anthropic>=0.34

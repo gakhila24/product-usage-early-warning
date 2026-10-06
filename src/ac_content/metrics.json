@@ -1,0 +1,422 @@
+[
+ {
+  "sourceType": "Internal",
+  "metric": "Total Accounts",
+  "definition": "Distinct customer accounts active at the end of the selected period.",
+  "source": "CRM account master; contract & billing system.",
+  "formula": "COUNT(DISTINCT account_id)",
+  "calcNote": "Include active customer relationships with at least one in-scope product.",
+  "rules": "Exclude prospects, test accounts, internal tenants and duplicates. Apply product, region and segment filters as of period end.",
+  "refresh": "Daily; period-end snapshot"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Average Health Score",
+  "definition": "Portfolio-level average of account health scores on a 0–100 scale.",
+  "source": "Health scoring mart fed by CRM, product telemetry, support, VoC, billing and Customer Success data.",
+  "formula": "SUM(account health score) / scored accounts",
+  "calcNote": "",
+  "rules": "Exclude accounts without the minimum required signals; show coverage separately. Do not silently convert missing scores to zero.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Account Health Score",
+  "definition": "Predicted renewal-health indicator combining behavioral, engagement, commercial and feedback signals.",
+  "source": "Health scoring mart; upstream internal systems listed above.",
+  "formula": "100 − risk_score  (risk_score = churn-model probability × 100)",
+  "calcNote": "In this build the score is the complement of the Random Forest churn risk score from model_scores; capped at 0 and 100.",
+  "rules": "Recommended outcome label: renewal within the defined horizon. Version the model, features, training window and threshold table.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "RFM Recency",
+  "definition": "Calendar days since an account's latest qualifying activity as of the governed snapshot date.",
+  "source": "Product telemetry warehouse; Customer Success platform only as a documented fallback for non-digital accounts.",
+  "formula": "as_of_date − MAX(qualifying_activity_date)",
+  "calcNote": "",
+  "rules": "Define qualifying activity and fallback precedence. Lower raw values are better; reverse the quintile so score 5 is most recent. Preserve Unknown when no valid activity exists.",
+  "refresh": "Daily"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "RFM Frequency",
+  "definition": "Distinct active days with qualifying product activity during the trailing 30 days.",
+  "source": "Product telemetry warehouse joined to the CRM account master.",
+  "formula": "COUNT(DISTINCT activity_date) over trailing 30 days",
+  "calcNote": "",
+  "rules": "Deduplicate same-day events and exclude bots, tests and passive/system events. Use a cohort-aware scoring distribution.",
+  "refresh": "Daily"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "RFM Monetary",
+  "definition": "Finance-approved recurring revenue associated with the account at the as-of date.",
+  "source": "Contract & billing system; Finance-approved revenue mart.",
+  "formula": "SUM(active account ARR in reporting currency)",
+  "calcNote": "",
+  "rules": "Use approved ARR and FX policies, remove duplicate contract lines and state whether account hierarchy roll-up is parent or child.",
+  "refresh": "Monthly close; daily provisional"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "RFM Score & Segment",
+  "definition": "Three 1–5 dimension scores and a versioned action segment used to prioritize engagement and value.",
+  "source": "RFM feature mart built from telemetry, CRM and Finance-governed revenue.",
+  "formula": "R_score | F_score | M_score",
+  "calcNote": "Recency is reverse-scored; Frequency and Monetary are ascending cohort quintiles.",
+  "rules": "Do not collapse to a simple total for actioning. Segment on R/F behavior, then use M to prioritize exposure. Version cohort, cut points and segment rules.",
+  "refresh": "Daily after source refresh"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "At-Risk Accounts / At-Risk %",
+  "definition": "Accounts in Fair, Poor or Critical health bands; count and share of scored accounts.",
+  "source": "Health scoring mart; CRM account master.",
+  "formula": "COUNT(score < 60)",
+  "calcNote": "",
+  "rules": "Current bands: Fair 40–59, Poor 20–39, Critical 0–19. The denominator is scored accounts, not all accounts, unless explicitly labeled.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Churn Rate (TTM)",
+  "definition": "Recurring revenue lost from customers that fully churned during the trailing twelve months.",
+  "source": "Contract & billing system; Finance-approved revenue mart.",
+  "formula": "churned opening ARR / opening ARR × 100",
+  "calcNote": "",
+  "rules": "Use constant-currency ARR where required. Exclude contraction from logo churn; define reactivations and acquisitions consistently.",
+  "refresh": "Monthly close"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Net Revenue Retention (NRR)",
+  "definition": "Recurring revenue retained from the opening customer cohort after expansion, contraction and churn.",
+  "source": "Contract & billing system; Finance-approved revenue mart.",
+  "formula": "(opening ARR + expansion − contraction − churn) / opening ARR × 100",
+  "calcNote": "",
+  "rules": "Exclude new-logo revenue after the cohort start. Use Finance-approved FX and ARR policies.",
+  "refresh": "Monthly close"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Health Score Distribution",
+  "definition": "Count and percentage of scored accounts in each health band.",
+  "source": "Health scoring mart.",
+  "formula": "band count / scored accounts × 100",
+  "calcNote": "",
+  "rules": "Excellent 80–100; Good 60–79; Fair 40–59; Poor 20–39; Critical 0–19. Percentages should sum to 100% subject to rounding.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Average Health Score Trend",
+  "definition": "Average score for each day or week in the selected range.",
+  "source": "Historical health-score snapshot table.",
+  "formula": "AVG(account_score) by snapshot_date",
+  "calcNote": "",
+  "rules": "Use one score per account per snapshot. Backfills must be marked because model-version changes can alter history.",
+  "refresh": "Weekly snapshots"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "30-Day Moving Average",
+  "definition": "Smoothed health trend using the latest 30 calendar days.",
+  "source": "Historical health-score snapshot table.",
+  "formula": "AVG(daily portfolio score over trailing 30 days)",
+  "calcNote": "",
+  "rules": "Use available days only after the minimum history threshold; disclose partial windows at the start of a series.",
+  "refresh": "Daily after snapshot"
+ },
+ {
+  "sourceType": "Mixed",
+  "metric": "Churn Driver Impact",
+  "definition": "Estimated negative point contribution of a driver to an account or portfolio health score.",
+  "source": "Model explanation output from internal scoring features; optional external enrichment features.",
+  "formula": "share(driver) × mean health shortfall of at-risk accounts, share ∝ corr(driver index, risk) × mean adverse z",
+  "calcNote": "Driver indices are composites of standardized signals (see Drivers page). Association within the model, not causation.",
+  "rules": "Negative values reduce health. Impact is association within the model, not proof of causation.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Mixed",
+  "metric": "Adoption Driver Impact",
+  "definition": "Estimated positive point contribution of adoption behaviors to health.",
+  "source": "Product telemetry, Customer Success, enablement data; optional enrichment.",
+  "formula": "share(driver) × (mean health of Excellent/Good − mean health of at-risk accounts)",
+  "calcNote": "",
+  "rules": "Compare only within the same model version and cohort. Positive contribution does not guarantee renewal.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Recommended Action Count",
+  "definition": "Distinct accounts currently eligible for a prescribed intervention.",
+  "source": "Rules engine using health score, drivers, support cases, renewal date and prior playbook history.",
+  "formula": "COUNT(DISTINCT eligible account_id)",
+  "calcNote": "",
+  "rules": "An account may qualify for multiple actions unless the dashboard applies a priority/deduplication rule.",
+  "refresh": "Daily"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "90-Day Renewal Pipeline",
+  "definition": "Recurring revenue scheduled to renew within 90 days of the selected as-of date.",
+  "source": "Contract & billing system.",
+  "formula": "SUM(renewal ARR where days_to_renewal 0–90)",
+  "calcNote": "",
+  "rules": "Include open renewals only. Convert currencies with the approved reporting rate and prevent duplicate contract-line aggregation.",
+  "refresh": "Daily"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Renewal Count",
+  "definition": "Number of distinct renewal opportunities in the selected horizon.",
+  "source": "Contract & billing system; CRM renewal opportunity records.",
+  "formula": "COUNT(DISTINCT renewal_id)",
+  "calcNote": "",
+  "rules": "Do not count contract lines as separate renewals unless that is the agreed grain.",
+  "refresh": "Daily"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Renewal Value by Health Band",
+  "definition": "Renewal pipeline amount assigned to the latest health band for each account.",
+  "source": "Contract & billing system joined to latest health-score snapshot.",
+  "formula": "SUM(renewal ARR) grouped by health band",
+  "calcNote": "",
+  "rules": "Use the latest score on or before the as-of date. Flag unscored renewal value separately.",
+  "refresh": "Daily pipeline; weekly score"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Poor / Critical Pipeline",
+  "definition": "Renewal value and share associated with accounts scoring below 40.",
+  "source": "Contract & billing system; health scoring mart.",
+  "formula": "SUM(ARR where score < 40)",
+  "calcNote": "",
+  "rules": "The value and percentage must use the same renewal horizon and currency basis.",
+  "refresh": "Daily / weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Best / Good Pipeline",
+  "definition": "Renewal value and share associated with accounts scoring 60 or above.",
+  "source": "Contract & billing system; health scoring mart.",
+  "formula": "SUM(ARR where score ≥ 60)",
+  "calcNote": "",
+  "rules": "The dashboard label “Best” should be standardized to “Excellent” to match the health-band taxonomy.",
+  "refresh": "Daily / weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Average Days to Renewal",
+  "definition": "Mean calendar days from the as-of date to active renewal dates.",
+  "source": "Contract & billing system.",
+  "formula": "AVG(renewal_date − as_of_date)",
+  "calcNote": "",
+  "rules": "Limit to the selected renewal horizon; exclude closed, cancelled and missing renewal dates.",
+  "refresh": "Daily"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Owner Coverage",
+  "definition": "Share of in-scope accounts or renewals assigned to an active owner.",
+  "source": "CRM account master and employee directory.",
+  "formula": "assigned active-owner records / eligible records × 100",
+  "calcNote": "",
+  "rules": "Specify whether the denominator is accounts or renewals. Treat inactive or invalid owner IDs as unassigned.",
+  "refresh": "Daily"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Product Portfolio Accounts",
+  "definition": "Distinct active accounts holding each product.",
+  "source": "CRM account-product relationship; entitlement or contract system.",
+  "formula": "COUNT(DISTINCT account_id) by product",
+  "calcNote": "",
+  "rules": "Multi-product customers may appear in more than one product row; the sum can exceed the portfolio total.",
+  "refresh": "Daily"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Product Average Score",
+  "definition": "Average health for accounts associated with a selected product.",
+  "source": "Account-product relationship joined to health scoring mart.",
+  "formula": "AVG(account_score) by product",
+  "calcNote": "",
+  "rules": "Define how enterprise-level health is allocated when an account owns multiple products.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Product At-Risk %",
+  "definition": "Share of scored product accounts below the risk threshold.",
+  "source": "Account-product relationship; health scoring mart.",
+  "formula": "product accounts with score < 60 / scored product accounts × 100",
+  "calcNote": "",
+  "rules": "Keep score grain consistent: product-level score if available, otherwise label as account-level health.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Product NRR",
+  "definition": "Net revenue retention for the opening revenue cohort of each product.",
+  "source": "Finance-approved revenue mart; contract product mapping.",
+  "formula": "product cohort ending ARR / product opening ARR × 100",
+  "calcNote": "",
+  "rules": "Allocate bundles using the Finance-approved product revenue rule.",
+  "refresh": "Monthly close"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Risk by Region",
+  "definition": "Count of at-risk accounts assigned to each reporting region.",
+  "source": "CRM region mapping; health scoring mart.",
+  "formula": "COUNT(DISTINCT account_id where score < 60) by region",
+  "calcNote": "",
+  "rules": "Use a governed account-to-region mapping and an “Unknown” bucket rather than dropping unmapped records.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Alert Count",
+  "definition": "Open, unreviewed alerts generated by score or signal thresholds.",
+  "source": "Alert & workflow store.",
+  "formula": "COUNT(alert_id where status = open)",
+  "calcNote": "",
+  "rules": "Deduplicate repeated events; show severity and aging. “Mark reviewed” changes status, not underlying risk.",
+  "refresh": "Near real time / daily"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Adoption Decline %",
+  "definition": "Percentage decrease in the selected adoption measure versus its comparison period.",
+  "source": "Product telemetry warehouse.",
+  "formula": "(current adoption − prior adoption) / prior adoption × 100",
+  "calcNote": "",
+  "rules": "The adoption measure (active users, frequency or feature breadth) and comparison window must be stated in the alert.",
+  "refresh": "Daily or weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Accounts Improved After ROI Review",
+  "definition": "Accounts whose health score increased after a completed ROI intervention.",
+  "source": "Customer Success intervention log; historical health-score snapshots.",
+  "formula": "COUNT(accounts with post-score − pre-score ≥ threshold)",
+  "calcNote": "",
+  "rules": "Define pre/post windows and improvement threshold. Treat as observational unless a causal design is used.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Model Data Sources",
+  "definition": "Count of governed source systems contributing active features to the model.",
+  "source": "Data catalog and model feature registry.",
+  "formula": "COUNT(DISTINCT active source_system_id)",
+  "calcNote": "",
+  "rules": "Count only sources with data used in the current production model version.",
+  "refresh": "Per model release"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Signals Tracked",
+  "definition": "Count of active engineered features evaluated or served by the scoring pipeline.",
+  "source": "Feature store / model registry.",
+  "formula": "COUNT(active feature_id)",
+  "calcNote": "",
+  "rules": "Distinguish raw fields, engineered features and features used by the final model.",
+  "refresh": "Per model release"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Model Refresh / Next Refresh",
+  "definition": "Cadence and next scheduled run of the health scoring pipeline.",
+  "source": "Pipeline scheduler and orchestration logs.",
+  "formula": "latest successful run + configured cadence",
+  "calcNote": "",
+  "rules": "Show last successful refresh and data-through date; do not infer freshness from schedule alone.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Model Confidence",
+  "definition": "Plain-language quality indicator based on model validation and account-level data sufficiency.",
+  "source": "Model registry, validation report and feature-availability checks.",
+  "formula": "mapped validation tier + coverage rules",
+  "calcNote": "",
+  "rules": "Define “High/Medium/Low” thresholds. Do not present a generic confidence label without a measurable criterion.",
+  "refresh": "Per release; weekly coverage"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Segment Accounts",
+  "definition": "Distinct active accounts classified as Enterprise, Mid-Market or SMB.",
+  "source": "CRM account master and governed segmentation table.",
+  "formula": "COUNT(DISTINCT account_id) by segment",
+  "calcNote": "",
+  "rules": "Use effective-dated segment rules to reproduce historical views.",
+  "refresh": "Daily"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Segment Average Health",
+  "definition": "Average health score among scored accounts in a segment.",
+  "source": "Governed segmentation table; health scoring mart.",
+  "formula": "AVG(account_score) by segment",
+  "calcNote": "",
+  "rules": "Show score coverage by segment to prevent missingness from biasing comparison.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Segment At-Risk %",
+  "definition": "Share of scored accounts below 60 within a segment.",
+  "source": "Governed segmentation table; health scoring mart.",
+  "formula": "at-risk scored accounts / scored segment accounts × 100",
+  "calcNote": "",
+  "rules": "Use the same health thresholds across segment comparisons unless explicitly recalibrated.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Segment NRR",
+  "definition": "Net revenue retention for the opening revenue cohort in a market segment.",
+  "source": "Finance-approved revenue mart; governed segmentation table.",
+  "formula": "segment cohort ending ARR / segment opening ARR × 100",
+  "calcNote": "",
+  "rules": "Freeze the segment at cohort start or clearly label dynamic re-segmentation.",
+  "refresh": "Monthly close"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Renewal Amount",
+  "definition": "Recurring revenue value associated with an account’s renewal record.",
+  "source": "Contract & billing system.",
+  "formula": "SUM(in-scope recurring contract value)",
+  "calcNote": "",
+  "rules": "Display reporting currency and whether the value is ARR, ACV or TCV; the prototype currently uses unlabeled synthetic amounts.",
+  "refresh": "Daily"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Top Driver",
+  "definition": "Highest-magnitude adverse model explanation or governed rule for an account.",
+  "source": "Model explanation output; support, telemetry, VoC and Customer Success features.",
+  "formula": "ARGMAX(|negative contribution|)",
+  "calcNote": "",
+  "rules": "Use a readable driver taxonomy and minimum confidence threshold; show “Insufficient data” where appropriate.",
+  "refresh": "Weekly"
+ },
+ {
+  "sourceType": "Internal",
+  "metric": "Playbook Eligible Accounts",
+  "definition": "Distinct accounts meeting a playbook’s trigger, eligibility and suppression rules.",
+  "source": "Rules engine, Customer Success platform and alert/workflow store.",
+  "formula": "COUNT(DISTINCT accounts passing rule set)",
+  "calcNote": "",
+  "rules": "Suppress accounts already enrolled, recently completed, opted out or lacking an active owner as defined by policy.",
+  "refresh": "Daily"
+ }
+]

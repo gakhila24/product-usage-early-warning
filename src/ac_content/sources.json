@@ -1,0 +1,79 @@
+[
+ {
+  "name": "Synthetic data generator + SQLite (churn_data.db)",
+  "type": "Embedded · synthetic",
+  "captured": "Seeded, fully synthetic accounts, 12 monthly telemetry/support/commercial snapshots, interventions, churn events and spend history written by generate_synthetic_data.py. No customer data is used.",
+  "supports": "Every value currently shown in this dashboard.",
+  "status": "Current"
+ },
+ {
+  "name": "CRM account master",
+  "type": "Internal",
+  "captured": "Account ID, hierarchy, product ownership, region, segment, lifecycle stage, owner and active/inactive status.",
+  "supports": "Total accounts, product/region/segment cuts, owner coverage and account-level records.",
+  "status": "Proposed"
+ },
+ {
+  "name": "Contract & billing system",
+  "type": "Internal",
+  "captured": "Contract start/end date, renewal date, recurring revenue, expansion, contraction, cancellation and currency.",
+  "supports": "Renewal pipeline, churn rate, NRR, days to renewal, renewal amount and RFM Monetary value.",
+  "status": "Proposed"
+ },
+ {
+  "name": "Product telemetry warehouse",
+  "type": "Internal",
+  "captured": "Eligible seats, activation, active users, feature events, workflow depth, frequency, recency and integration usage.",
+  "supports": "Health score, adoption decline, product-adoption and integration drivers, RFM Recency and Frequency.",
+  "status": "Proposed"
+ },
+ {
+  "name": "Customer Success platform",
+  "type": "Internal",
+  "captured": "Success plans, customer touchpoints, sponsor/champion status, business outcomes, playbook enrollment and completed interventions.",
+  "supports": "Engagement signals, recommended actions, playbook eligibility, post-intervention improvement and governed Recency fallback.",
+  "status": "Proposed"
+ },
+ {
+  "name": "Support case management",
+  "type": "Internal",
+  "captured": "Open and closed cases, severity, age, SLA status, escalations, resolution time and customer-impact classification.",
+  "supports": "Support Experience driver, critical-ticket alerts and recommended actions.",
+  "status": "Proposed"
+ },
+ {
+  "name": "Voice of Customer / survey platform",
+  "type": "Internal",
+  "captured": "NPS/CSAT responses, qualitative themes, perceived value, pricing concerns and onboarding feedback.",
+  "supports": "Perceived Value / ROI, Pricing / Cost, Onboarding and competing-solution drivers.",
+  "status": "Proposed"
+ },
+ {
+  "name": "Identity & access service",
+  "type": "Internal",
+  "captured": "Provisioned users, licensed seats, admin roles, sign-ins and activation status.",
+  "supports": "Multi-user activation, owner/admin coverage and eligible-account denominators.",
+  "status": "Proposed"
+ },
+ {
+  "name": "Enablement / learning system",
+  "type": "Internal",
+  "captured": "Onboarding milestones, course enrollment, attendance, completion and learning pathways.",
+  "supports": "Onboarding completion and training participation drivers.",
+  "status": "Proposed"
+ },
+ {
+  "name": "Alert & workflow store",
+  "type": "Internal",
+  "captured": "Threshold breaches, score movements, alert state, owner acknowledgement and workflow execution.",
+  "supports": "Alert count, recommended-action counts and intervention tracking.",
+  "status": "Proposed"
+ },
+ {
+  "name": "Third-party firmographic enrichment",
+  "type": "External · optional",
+  "captured": "Industry, company size, growth signals, ownership changes and other licensed firmographic attributes.",
+  "supports": "Optional model features and benchmarking; not required for core financial or usage metrics.",
+  "status": "Proposed"
+ }
+]
